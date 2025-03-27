@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Responsive Canvas Website</title>
     <style>
         body {
@@ -10,21 +10,16 @@
             padding: 20px;
             background-color: #f0f0f0;
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 20px;
-            justify-content: center;
+            align-items: center;
         }
         canvas {
             border: 1px solid #000;
             width: 100%;
             max-width: 1080px;
-            height: calc(100% * 16 / 9);
-            max-height: 1920px;
-        }
-        @media (orientation: portrait) {
-            canvas {
-                height: calc(100% * 9 / 16);
-            }
+            height: auto;
+            aspect-ratio: 9 / 16; /* Rasio aspek portrait */
         }
     </style>
 </head>
@@ -105,8 +100,9 @@
                 ctx.fillStyle = 'gray';
                 ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
                 ctx.fillStyle = 'white';
-                ctx.font = '20px Arial';
-                ctx.fillText('Tombol tidak ditemukan', buttonX + 10, buttonY + 30);
+                ctx.font = `${canvasWidth * 0.03}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.fillText('Tombol tidak ditemukan', buttonX + buttonWidth / 2, buttonY + buttonHeight / 1.5);
             }
         }
 
@@ -154,7 +150,7 @@
                 ctx.fillStyle = 'gray';
                 ctx.fillRect(hadirRect.x, hadirRect.y, hadirRect.width, hadirRect.height);
                 ctx.fillStyle = 'white';
-                ctx.font = '20px Arial';
+                ctx.font = `${canvasWidth * 0.03}px Arial`;
                 ctx.textAlign = 'center';
                 ctx.fillText('Hadir', hadirRect.x + hadirRect.width / 2, hadirRect.y + hadirRect.height / 1.5);
             }
@@ -173,24 +169,24 @@
                 ctx.fillStyle = 'gray';
                 ctx.fillRect(tidakHadirRect.x, tidakHadirRect.y, tidakHadirRect.width, tidakHadirRect.height);
                 ctx.fillStyle = 'white';
-                ctx.font = '20px Arial';
+                ctx.font = `${canvasWidth * 0.03}px Arial`;
                 ctx.textAlign = 'center';
                 ctx.fillText('Tidak Hadir', tidakHadirRect.x + tidakHadirRect.width / 2, tidakHadirRect.y + tidakHadirRect.height / 1.5);
             }
 
             // Kotak Komentar
             commentRect = {
-                x: (canvasWidth - canvasWidth * 0.7) / 2,
+                x: canvasWidth * 0.15,
                 y: hadirRect.y + buttonHeight + canvasHeight * 0.03,
                 width: canvasWidth * 0.7,
                 height: canvasHeight * 0.12
             };
             drawRoundedRect(ctx, commentRect.x, commentRect.y, commentRect.width, commentRect.height, 10, 'white', true);
             ctx.strokeStyle = '#B0BEC5';
-            ctx.lineWidth = 2;  // Fixed typo: 'compañ2' to '2'
+            ctx.lineWidth = 2;
             ctx.stroke();
             ctx.fillStyle = commentText ? 'black' : '#757575';
-            ctx.font = '18px Arial';
+            ctx.font = `${canvasWidth * 0.03}px Arial`;
             ctx.textAlign = 'left';
             ctx.fillText(commentText || 'Ketik komentar Anda...', commentRect.x + 10, commentRect.y + commentRect.height / 2);
 
@@ -207,7 +203,7 @@
                 ctx.fillStyle = '#1976D2';
                 ctx.fillRect(kirimRect.x, kirimRect.y, kirimRect.width, kirimRect.height);
                 ctx.fillStyle = 'white';
-                ctx.font = 'bold 24px Arial';
+                ctx.font = `${canvasWidth * 0.03}px Arial`;
                 ctx.textAlign = 'center';
                 ctx.fillText('Kirim', kirimRect.x + kirimRect.width / 2, kirimRect.y + kirimRect.height / 1.4);
             }
@@ -229,7 +225,7 @@
                     ctx.fillStyle = 'gray';
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     ctx.fillStyle = 'white';
-                    ctx.font = '20px Arial';
+                    ctx.font = `${canvas.width * 0.03}px Arial`;
                     ctx.fillText('Gambar tidak ditemukan', 10, 50);
                 }
             });
@@ -255,7 +251,7 @@
             const x = (event.clientX - rect.left) * scaleX;
             const y = (event.clientY - rect.top) * scaleY;
 
-            if (x >= buttonRect1.x && x <= buttonRect1.x + buttonRect1.width &&  // Fixed typo: missing '.x'
+            if (x >= buttonRect1.x && x <= buttonRect1.x + buttonRect1.width &&
                 y >= buttonRect1.y && y <= buttonRect1.y + buttonRect1.height) {
                 audio.play().catch(error => console.log("Error playing audio:", error));
                 canvases[1].scrollIntoView({ behavior: 'smooth' });
@@ -264,7 +260,7 @@
 
         canvases[3].addEventListener('click', function(event) {
             const rect = canvases[3].getBoundingClientRect();
-            const scaleX = canvases[3].width / rect.width;  // Fixed typo: 'zeven3' to '3'
+            const scaleX = canvases[3].width / rect.width;
             const scaleY = canvases[3].height / rect.height;
             const x = (event.clientX - rect.left) * scaleX;
             const y = (event.clientY - rect.top) * scaleY;
@@ -282,28 +278,24 @@
             const x = (event.clientX - rect.left) * scaleX;
             const y = (event.clientY - rect.top) * scaleY;
 
-            // Tombol Hadir
             if (x >= hadirRect.x && x <= hadirRect.x + hadirRect.width &&
                 y >= hadirRect.y && y <= hadirRect.y + hadirRect.height) {
                 rsvpStatus = 'hadir';
                 updateRSVP();
             }
 
-            // Tombol Tidak Hadir
             if (x >= tidakHadirRect.x && x <= tidakHadirRect.x + tidakHadirRect.width &&
                 y >= tidakHadirRect.y && y <= tidakHadirRect.y + tidakHadirRect.height) {
                 rsvpStatus = 'tidak';
                 updateRSVP();
             }
 
-            // Klik pada kotak komentar untuk input
             if (x >= commentRect.x && x <= commentRect.x + commentRect.width &&
                 y >= commentRect.y && y <= commentRect.y + commentRect.height) {
                 commentText = prompt('Masukkan komentar Anda:', commentText) || commentText;
                 updateRSVP();
             }
 
-            // Tombol Kirim
             if (x >= kirimRect.x && x <= kirimRect.x + kirimRect.width &&
                 y >= kirimRect.y && y <= kirimRect.y + kirimRect.height) {
                 if (rsvpStatus) {
