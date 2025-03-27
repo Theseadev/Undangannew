@@ -1,3 +1,4 @@
+You said:
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,104 +8,311 @@
     <style>
         body {
             margin: 0;
-            padding: 0;
-            background-color: #f8f8f8;
+            padding: 20px;
+            background-color: #f0f0f0;
             display: flex;
             flex-direction: column;
+            gap: 20px;
             align-items: center;
-            justify-content: center;
-        }
-        .canvas-container {
-            width: 100%;
-            max-width: 450px; /* Agar tampilan tetap nyaman di Android */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
         }
         canvas {
             border: 1px solid #000;
             width: 100%;
+            max-width: 1080px;
             height: auto;
-            aspect-ratio: 9 / 16; /* Tetap menjaga aspek portrait */
-            border-radius: 8px;
-            background-color: #fff;
-        }
-        .button {
-            width: 80%;
-            max-width: 300px;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            text-align: center;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            user-select: none;
-            margin-top: 10px;
-        }
-        .button:active {
-            background-color: #0056b3;
+            aspect-ratio: 9 / 16; /* Rasio aspek portrait */
         }
     </style>
 </head>
 <body>
-    <div class="canvas-container">
-        <canvas id="canvas1" width="1080" height="1920"></canvas>
-        <canvas id="canvas2" width="1080" height="1920"></canvas>
-        <canvas id="canvas3" width="1080" height="1920"></canvas>
-        <canvas id="canvas4" width="1080" height="1920"></canvas>
-        <canvas id="canvas5" width="1080" height="1920"></canvas>
-        <canvas id="canvas6" width="1080" height="1920"></canvas>
-        <canvas id="canvas7" width="1080" height="1920"></canvas>
-    </div>
-
+    <canvas id="canvas1" width="1080" height="1920"></canvas>
+    <canvas id="canvas2" width="1080" height="1920"></canvas>
+    <canvas id="canvas3" width="1080" height="1920"></canvas>
+    <canvas id="canvas4" width="1080" height="1920"></canvas>
+    <canvas id="canvas5" width="1080" height="1920"></canvas>
+    <canvas id="canvas6" width="1080" height="1920"></canvas>
+    <canvas id="canvas7" width="1080" height="1920"></canvas>
+    
     <audio id="backgroundMusic" loop>
         <source src="src/audio/beautifulinwhite.mp3" type="audio/mpeg">
         Browser Anda tidak mendukung elemen audio.
     </audio>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const canvases = document.querySelectorAll("canvas");
-            const imagePaths = [
-                'src/image/cover.png',
-                'src/image/halaman1.png',
-                'src/image/halaman2.png',
-                'src/image/halaman3.png',
-                'src/image/halaman4.png',
-                'src/image/halaman5.png',
-                'src/image/halaman6.png'
-            ];
+        const canvases = [
+            document.getElementById('canvas1'),
+            document.getElementById('canvas2'),
+            document.getElementById('canvas3'),
+            document.getElementById('canvas4'),
+            document.getElementById('canvas5'),
+            document.getElementById('canvas6'),
+            document.getElementById('canvas7')
+        ];
 
-            // Preload images
-            const images = imagePaths.map(src => {
-                let img = new Image();
-                img.src = src;
-                return img;
-            });
+        const imagePaths = [
+            'src/image/cover.png',
+            'src/image/halaman1.png',
+            'src/image/halaman2.png',
+            'src/image/halaman3.png',
+            'src/image/halaman4.png',
+            'src/image/halaman5.png',
+            'src/image/halaman6.png'
+        ];
 
-            function drawCanvas() {
-                canvases.forEach((canvas, index) => {
-                    let ctx = canvas.getContext("2d");
-                    let img = images[index];
+        const audio = document.getElementById('backgroundMusic');
+        let buttonRect1 = { x: 0, y: 0, width: 0, height: 0 };
+        let buttonRect4 = { x: 0, y: 0, width: 0, height: 0 };
+        let hadirRect = { x: 0, y: 0, width: 0, height: 0 };
+        let tidakHadirRect = { x: 0, y: 0, width: 0, height: 0 };
+        let kirimRect = { x: 0, y: 0, width: 0, height: 0 };
+        let commentRect = { x: 0, y: 0, width: 0, height: 0 };
+        let rsvpStatus = null;
+        let commentText = '';
 
-                    if (img.complete) {
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    } else {
-                        img.onload = () => {
-                            ctx.clearRect(0, 0, canvas.width, canvas.height);
-                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        };
-                    }
-                });
+        // Preload all images
+        const cachedImages = {};
+        imagePaths.forEach((path, index) => {
+            cachedImages[index] = new Image();
+            cachedImages[index].src = path;
+        });
+        const buttonImg = new Image(); buttonImg.src = 'src/image/button.png';
+        const mapImg = new Image(); mapImg.src = 'src/image/map.png';
+        const hadirImg = new Image(); hadirImg.src = 'src/image/hadir.png';
+        const ahadirImg = new Image(); ahadirImg.src = 'src/image/ahadir.png';
+        const tidakHadirImg = new Image(); tidakHadirImg.src = 'src/image/tidakhadir.png';
+        const atidakHadirImg = new Image(); atidakHadirImg.src = 'src/image/atidakhadir.png';
+        const kirimImg = new Image(); kirimImg.src = 'src/image/kirim.png';
+
+        function drawButton(ctx, canvasWidth, canvasHeight, buttonRect, isCanvas4 = false) {
+            const img = isCanvas4 ? mapImg : buttonImg;
+            const buttonWidth = canvasWidth * 0.4;
+            const buttonHeight = canvasHeight * 0.05;
+            const buttonX = (canvasWidth - buttonWidth) / 2;
+            const buttonY = isCanvas4 ? canvasHeight * 0.85 : canvasHeight * 0.7;
+
+            buttonRect.x = buttonX;
+            buttonRect.y = buttonY;
+            buttonRect.width = buttonWidth;
+            buttonRect.height = buttonHeight;
+
+            if (img.complete) {
+                ctx.drawImage(img, buttonX, buttonY, buttonWidth, buttonHeight);
+            } else {
+                ctx.fillStyle = 'gray';
+                ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+                ctx.fillStyle = 'white';
+                ctx.font = ${canvasWidth * 0.03}px Arial;
+                ctx.textAlign = 'center';
+                ctx.fillText('Tombol tidak ditemukan', buttonX + buttonWidth / 2, buttonY + buttonHeight / 1.5);
+            }
+        }
+
+        function drawRoundedRect(ctx, x, y, width, height, radius, fillColor, shadow = false) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.arcTo(x + width, y, x + width, y + height, radius);
+            ctx.arcTo(x + width, y + height, x, y + height, radius);
+            ctx.arcTo(x, y + height, x, y, radius);
+            ctx.arcTo(x, y, x + width, y, radius);
+            ctx.closePath();
+            
+            if (shadow) {
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                ctx.shadowBlur = 10;
+                ctx.shadowOffsetX = 5;
+                ctx.shadowOffsetY = 5;
+            }
+            
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+            
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+        }
+
+        function drawRSVP(ctx, canvasWidth, canvasHeight) {
+            const buttonWidth = canvasWidth * 0.25;
+            const buttonHeight = canvasHeight * 0.05;
+            const buttonSpacing = canvasWidth * 0.05;
+
+            // Tombol Hadir
+            hadirRect = {
+                x: (canvasWidth - (2 * buttonWidth + buttonSpacing)) / 2,
+                y: canvasHeight * 0.25,
+                width: buttonWidth,
+                height: buttonHeight
+            };
+            const hadirImage = rsvpStatus === 'hadir' ? ahadirImg : hadirImg;
+            if (hadirImage.complete) {
+                ctx.drawImage(hadirImage, hadirRect.x, hadirRect.y, hadirRect.width, hadirRect.height);
+            } else {
+                ctx.fillStyle = 'gray';
+                ctx.fillRect(hadirRect.x, hadirRect.y, hadirRect.width, hadirRect.height);
+                ctx.fillStyle = 'white';
+                ctx.font = ${canvasWidth * 0.03}px Arial;
+                ctx.textAlign = 'center';
+                ctx.fillText('Hadir', hadirRect.x + hadirRect.width / 2, hadirRect.y + hadirRect.height / 1.5);
             }
 
-            drawCanvas();
-            window.addEventListener("resize", drawCanvas);
+            // Tombol Tidak Hadir
+            tidakHadirRect = {
+                x: hadirRect.x + buttonWidth + buttonSpacing,
+                y: canvasHeight * 0.25,
+                width: buttonWidth,
+                height: buttonHeight
+            };
+            const tidakHadirImage = rsvpStatus === 'tidak' ? atidakHadirImg : tidakHadirImg;
+            if (tidakHadirImage.complete) {
+                ctx.drawImage(tidakHadirImage, tidakHadirRect.x, tidakHadirRect.y, tidakHadirRect.width, tidakHadirRect.height);
+            } else {
+                ctx.fillStyle = 'gray';
+                ctx.fillRect(tidakHadirRect.x, tidakHadirRect.y, tidakHadirRect.width, tidakHadirRect.height);
+                ctx.fillStyle = 'white';
+                ctx.font = ${canvasWidth * 0.03}px Arial;
+                ctx.textAlign = 'center';
+                ctx.fillText('Tidak Hadir', tidakHadirRect.x + tidakHadirRect.width / 2, tidakHadirRect.y + tidakHadirRect.height / 1.5);
+            }
+
+            // Kotak Komentar
+            commentRect = {
+                x: canvasWidth * 0.15,
+                y: hadirRect.y + buttonHeight + canvasHeight * 0.03,
+                width: canvasWidth * 0.7,
+                height: canvasHeight * 0.12
+            };
+            drawRoundedRect(ctx, commentRect.x, commentRect.y, commentRect.width, commentRect.height, 10, 'white', true);
+            ctx.strokeStyle = '#B0BEC5';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.fillStyle = commentText ? 'black' : '#757575';
+            ctx.font = ${canvasWidth * 0.03}px Arial;
+            ctx.textAlign = 'left';
+            ctx.fillText(commentText || 'Ketik komentar Anda...', commentRect.x + 10, commentRect.y + commentRect.height / 2);
+
+            // Tombol Kirim
+            kirimRect = {
+                x: (canvasWidth - buttonWidth) / 2,
+                y: commentRect.y + commentRect.height + canvasHeight * 0.03,
+                width: buttonWidth,
+                height: buttonHeight
+            };
+            if (kirimImg.complete) {
+                ctx.drawImage(kirimImg, kirimRect.x, kirimRect.y, kirimRect.width, kirimRect.height);
+            } else {
+                ctx.fillStyle = '#1976D2';
+                ctx.fillRect(kirimRect.x, kirimRect.y, kirimRect.width, kirimRect.height);
+                ctx.fillStyle = 'white';
+                ctx.font = ${canvasWidth * 0.03}px Arial;
+                ctx.textAlign = 'center';
+                ctx.fillText('Kirim', kirimRect.x + kirimRect.width / 2, kirimRect.y + kirimRect.height / 1.4);
+            }
+        }
+
+        function drawImages() {
+            canvases.forEach((canvas, index) => {
+                const ctx = canvas.getContext('2d');
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+
+                const img = cachedImages[index];
+                if (img.complete) {
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    if (index === 0) drawButton(ctx, canvas.width, canvas.height, buttonRect1, false);
+                    if (index === 3) drawButton(ctx, canvas.width, canvas.height, buttonRect4, true);
+                    if (index === 6) drawRSVP(ctx, canvas.width, canvas.height);
+                } else {
+                    ctx.fillStyle = 'gray';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = 'white';
+                    ctx.font = ${canvas.width * 0.03}px Arial;
+                    ctx.fillText('Gambar tidak ditemukan', 10, 50);
+                }
+            });
+        }
+
+        function updateRSVP() {
+            const canvas = canvases[6];
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            const img = cachedImages[6];
+            if (img.complete) {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                drawRSVP(ctx, canvas.width, canvas.height);
+            }
+        }
+
+        canvases[0].addEventListener('click', function(event) {
+            const rect = canvases[0].getBoundingClientRect();
+            const scaleX = canvases[0].width / rect.width;
+            const scaleY = canvases[0].height / rect.height;
+            const x = (event.clientX - rect.left) * scaleX;
+            const y = (event.clientY - rect.top) * scaleY;
+
+            if (x >= buttonRect1.x && x <= buttonRect1.x + buttonRect1.width &&
+                y >= buttonRect1.y && y <= buttonRect1.y + buttonRect1.height) {
+                audio.play().catch(error => console.log("Error playing audio:", error));
+                canvases[1].scrollIntoView({ behavior: 'smooth' });
+            }
         });
+
+        canvases[3].addEventListener('click', function(event) {
+            const rect = canvases[3].getBoundingClientRect();
+            const scaleX = canvases[3].width / rect.width;
+            const scaleY = canvases[3].height / rect.height;
+            const x = (event.clientX - rect.left) * scaleX;
+            const y = (event.clientY - rect.top) * scaleY;
+
+            if (x >= buttonRect4.x && x <= buttonRect4.x + buttonRect4.width &&
+                y >= buttonRect4.y && y <= buttonRect4.y + buttonRect4.height) {
+                window.open('https://www.google.com/maps', '_blank');
+            }
+        });
+
+        canvases[6].addEventListener('click', function(event) {
+            const rect = canvases[6].getBoundingClientRect();
+            const scaleX = canvases[6].width / rect.width;
+            const scaleY = canvases[6].height / rect.height;
+            const x = (event.clientX - rect.left) * scaleX;
+            const y = (event.clientY - rect.top) * scaleY;
+
+            if (x >= hadirRect.x && x <= hadirRect.x + hadirRect.width &&
+                y >= hadirRect.y && y <= hadirRect.y + hadirRect.height) {
+                rsvpStatus = 'hadir';
+                updateRSVP();
+            }
+
+            if (x >= tidakHadirRect.x && x <= tidakHadirRect.x + tidakHadirRect.width &&
+                y >= tidakHadirRect.y && y <= tidakHadirRect.y + tidakHadirRect.height) {
+                rsvpStatus = 'tidak';
+                updateRSVP();
+            }
+
+            if (x >= commentRect.x && x <= commentRect.x + commentRect.width &&
+                y >= commentRect.y && y <= commentRect.y + commentRect.height) {
+                commentText = prompt('Masukkan komentar Anda:', commentText) || commentText;
+                updateRSVP();
+            }
+
+            if (x >= kirimRect.x && x <= kirimRect.x + kirimRect.width &&
+                y >= kirimRect.y && y <= kirimRect.y + kirimRect.height) {
+                if (rsvpStatus) {
+                    console.log('RSVP:', rsvpStatus, 'Komentar:', commentText);
+                    alert('Terima kasih atas konfirmasi Anda!\nStatus: ' + rsvpStatus + '\nKomentar: ' + commentText);
+                    rsvpStatus = null;
+                    commentText = '';
+                    updateRSVP();
+                } else {
+                    alert('Silakan pilih Hadir atau Tidak Hadir terlebih dahulu!');
+                }
+            }
+        });
+
+        window.addEventListener('load', drawImages);
+        window.addEventListener('resize', drawImages);
     </script>
 </body>
 </html>
