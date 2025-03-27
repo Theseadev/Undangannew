@@ -2,36 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Responsive Canvas Website</title>
     <style>
         body {
             margin: 0;
-            padding: 10px;
+            padding: 20px;
             background-color: #f0f0f0;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 20px;
             align-items: center;
-            overflow-x: hidden;
         }
         canvas {
             border: 1px solid #000;
             width: 100%;
             max-width: 1080px;
             height: auto;
-            aspect-ratio: 9 / 16; /* Portrait aspect ratio */
-            touch-action: none; /* Prevent unwanted touch behaviors */
-        }
-        /* Ensure content fits smaller screens */
-        @media (max-width: 600px) {
-            body {
-                padding: 5px;
-                gap: 5px;
-            }
-            canvas {
-                max-width: 100%;
-            }
+            aspect-ratio: 9 / 16; /* Rasio aspek portrait */
         }
     </style>
 </head>
@@ -46,7 +34,7 @@
     
     <audio id="backgroundMusic" loop>
         <source src="src/audio/beautifulinwhite.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
+        Browser Anda tidak mendukung elemen audio.
     </audio>
 
     <script>
@@ -112,9 +100,9 @@
                 ctx.fillStyle = 'gray';
                 ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
                 ctx.fillStyle = 'white';
-                ctx.font = `${canvasWidth * 0.03}px Arial`;
+                ctx.font = ${canvasWidth * 0.03}px Arial;
                 ctx.textAlign = 'center';
-                ctx.fillText('Button not found', buttonX + buttonWidth / 2, buttonY + buttonHeight / 1.5);
+                ctx.fillText('Tombol tidak ditemukan', buttonX + buttonWidth / 2, buttonY + buttonHeight / 1.5);
             }
         }
 
@@ -148,6 +136,7 @@
             const buttonHeight = canvasHeight * 0.05;
             const buttonSpacing = canvasWidth * 0.05;
 
+            // Tombol Hadir
             hadirRect = {
                 x: (canvasWidth - (2 * buttonWidth + buttonSpacing)) / 2,
                 y: canvasHeight * 0.25,
@@ -157,8 +146,16 @@
             const hadirImage = rsvpStatus === 'hadir' ? ahadirImg : hadirImg;
             if (hadirImage.complete) {
                 ctx.drawImage(hadirImage, hadirRect.x, hadirRect.y, hadirRect.width, hadirRect.height);
+            } else {
+                ctx.fillStyle = 'gray';
+                ctx.fillRect(hadirRect.x, hadirRect.y, hadirRect.width, hadirRect.height);
+                ctx.fillStyle = 'white';
+                ctx.font = ${canvasWidth * 0.03}px Arial;
+                ctx.textAlign = 'center';
+                ctx.fillText('Hadir', hadirRect.x + hadirRect.width / 2, hadirRect.y + hadirRect.height / 1.5);
             }
 
+            // Tombol Tidak Hadir
             tidakHadirRect = {
                 x: hadirRect.x + buttonWidth + buttonSpacing,
                 y: canvasHeight * 0.25,
@@ -168,8 +165,16 @@
             const tidakHadirImage = rsvpStatus === 'tidak' ? atidakHadirImg : tidakHadirImg;
             if (tidakHadirImage.complete) {
                 ctx.drawImage(tidakHadirImage, tidakHadirRect.x, tidakHadirRect.y, tidakHadirRect.width, tidakHadirRect.height);
+            } else {
+                ctx.fillStyle = 'gray';
+                ctx.fillRect(tidakHadirRect.x, tidakHadirRect.y, tidakHadirRect.width, tidakHadirRect.height);
+                ctx.fillStyle = 'white';
+                ctx.font = ${canvasWidth * 0.03}px Arial;
+                ctx.textAlign = 'center';
+                ctx.fillText('Tidak Hadir', tidakHadirRect.x + tidakHadirRect.width / 2, tidakHadirRect.y + tidakHadirRect.height / 1.5);
             }
 
+            // Kotak Komentar
             commentRect = {
                 x: canvasWidth * 0.15,
                 y: hadirRect.y + buttonHeight + canvasHeight * 0.03,
@@ -181,10 +186,11 @@
             ctx.lineWidth = 2;
             ctx.stroke();
             ctx.fillStyle = commentText ? 'black' : '#757575';
-            ctx.font = `${canvasWidth * 0.03}px Arial`;
+            ctx.font = ${canvasWidth * 0.03}px Arial;
             ctx.textAlign = 'left';
-            ctx.fillText(commentText || 'Type your comment...', commentRect.x + 10, commentRect.y + commentRect.height / 2);
+            ctx.fillText(commentText || 'Ketik komentar Anda...', commentRect.x + 10, commentRect.y + commentRect.height / 2);
 
+            // Tombol Kirim
             kirimRect = {
                 x: (canvasWidth - buttonWidth) / 2,
                 y: commentRect.y + commentRect.height + canvasHeight * 0.03,
@@ -193,6 +199,13 @@
             };
             if (kirimImg.complete) {
                 ctx.drawImage(kirimImg, kirimRect.x, kirimRect.y, kirimRect.width, kirimRect.height);
+            } else {
+                ctx.fillStyle = '#1976D2';
+                ctx.fillRect(kirimRect.x, kirimRect.y, kirimRect.width, kirimRect.height);
+                ctx.fillStyle = 'white';
+                ctx.font = ${canvasWidth * 0.03}px Arial;
+                ctx.textAlign = 'center';
+                ctx.fillText('Kirim', kirimRect.x + kirimRect.width / 2, kirimRect.y + kirimRect.height / 1.4);
             }
         }
 
@@ -208,6 +221,12 @@
                     if (index === 0) drawButton(ctx, canvas.width, canvas.height, buttonRect1, false);
                     if (index === 3) drawButton(ctx, canvas.width, canvas.height, buttonRect4, true);
                     if (index === 6) drawRSVP(ctx, canvas.width, canvas.height);
+                } else {
+                    ctx.fillStyle = 'gray';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = 'white';
+                    ctx.font = ${canvas.width * 0.03}px Arial;
+                    ctx.fillText('Gambar tidak ditemukan', 10, 50);
                 }
             });
         }
@@ -225,67 +244,70 @@
             }
         }
 
-        function handleInteraction(canvas, event, callback) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
+        canvases[0].addEventListener('click', function(event) {
+            const rect = canvases[0].getBoundingClientRect();
+            const scaleX = canvases[0].width / rect.width;
+            const scaleY = canvases[0].height / rect.height;
             const x = (event.clientX - rect.left) * scaleX;
             const y = (event.clientY - rect.top) * scaleY;
-            callback(x, y);
-        }
 
-        canvases[0].addEventListener('touchstart', function(event) {
-            event.preventDefault();
-            handleInteraction(canvases[0], event.touches[0], (x, y) => {
-                if (x >= buttonRect1.x && x <= buttonRect1.x + buttonRect1.width &&
-                    y >= buttonRect1.y && y <= buttonRect1.y + buttonRect1.height) {
-                    audio.play().catch(() => alert('Please tap again to play music'));
-                    canvases[1].scrollIntoView({ behavior: 'smooth' });
-                }
-            });
+            if (x >= buttonRect1.x && x <= buttonRect1.x + buttonRect1.width &&
+                y >= buttonRect1.y && y <= buttonRect1.y + buttonRect1.height) {
+                audio.play().catch(error => console.log("Error playing audio:", error));
+                canvases[1].scrollIntoView({ behavior: 'smooth' });
+            }
         });
 
-        canvases[3].addEventListener('touchstart', function(event) {
-            event.preventDefault();
-            handleInteraction(canvases[3], event.touches[0], (x, y) => {
-                if (x >= buttonRect4.x && x <= buttonRect4.x + buttonRect4.width &&
-                    y >= buttonRect4.y && y <= buttonRect4.y + buttonRect4.height) {
-                    window.open('https://www.google.com/maps', '_blank');
-                }
-            });
+        canvases[3].addEventListener('click', function(event) {
+            const rect = canvases[3].getBoundingClientRect();
+            const scaleX = canvases[3].width / rect.width;
+            const scaleY = canvases[3].height / rect.height;
+            const x = (event.clientX - rect.left) * scaleX;
+            const y = (event.clientY - rect.top) * scaleY;
+
+            if (x >= buttonRect4.x && x <= buttonRect4.x + buttonRect4.width &&
+                y >= buttonRect4.y && y <= buttonRect4.y + buttonRect4.height) {
+                window.open('https://www.google.com/maps', '_blank');
+            }
         });
 
-        canvases[6].addEventListener('touchstart', function(event) {
-            event.preventDefault();
-            handleInteraction(canvases[6], event.touches[0], (x, y) => {
-                if (x >= hadirRect.x && x <= hadirRect.x + hadirRect.width &&
-                    y >= hadirRect.y && y <= hadirRect.y + hadirRect.height) {
-                    rsvpStatus = 'hadir';
+        canvases[6].addEventListener('click', function(event) {
+            const rect = canvases[6].getBoundingClientRect();
+            const scaleX = canvases[6].width / rect.width;
+            const scaleY = canvases[6].height / rect.height;
+            const x = (event.clientX - rect.left) * scaleX;
+            const y = (event.clientY - rect.top) * scaleY;
+
+            if (x >= hadirRect.x && x <= hadirRect.x + hadirRect.width &&
+                y >= hadirRect.y && y <= hadirRect.y + hadirRect.height) {
+                rsvpStatus = 'hadir';
+                updateRSVP();
+            }
+
+            if (x >= tidakHadirRect.x && x <= tidakHadirRect.x + tidakHadirRect.width &&
+                y >= tidakHadirRect.y && y <= tidakHadirRect.y + tidakHadirRect.height) {
+                rsvpStatus = 'tidak';
+                updateRSVP();
+            }
+
+            if (x >= commentRect.x && x <= commentRect.x + commentRect.width &&
+                y >= commentRect.y && y <= commentRect.y + commentRect.height) {
+                commentText = prompt('Masukkan komentar Anda:', commentText) || commentText;
+                updateRSVP();
+            }
+
+            if (x >= kirimRect.x && x <= kirimRect.x + kirimRect.width &&
+                y >= kirimRect.y && y <= kirimRect.y + kirimRect.height) {
+                if (rsvpStatus) {
+                    console.log('RSVP:', rsvpStatus, 'Komentar:', commentText);
+                    alert('Terima kasih atas konfirmasi Anda!\nStatus: ' + rsvpStatus + '\nKomentar: ' + commentText);
+                    rsvpStatus = null;
+                    commentText = '';
                     updateRSVP();
+                } else {
+                    alert('Silakan pilih Hadir atau Tidak Hadir terlebih dahulu!');
                 }
-                if (x >= tidakHadirRect.x && x <= tidakHadirRect.x + tidakHadirRect.width &&
-                    y >= tidakHadirRect.y && y <= tidakHadirRect.y + tidakHadirRect.height) {
-                    rsvpStatus = 'tidak';
-                    updateRSVP();
-                }
-                if (x >= commentRect.x && x <= commentRect.x + commentRect.width &&
-                    y >= commentRect.y && y <= commentRect.y + commentRect.height) {
-                    commentText = prompt('Enter your comment:', commentText) || commentText;
-                    updateRSVP();
-                }
-                if (x >= kirimRect.x && x <= kirimRect.x + kirimRect.width &&
-                    y >= kirimRect.y && y <= kirimRect.y + kirimRect.height) {
-                    if (rsvpStatus) {
-                        console.log('RSVP:', rsvpStatus, 'Comment:', commentText);
-                        alert('Thank you for your confirmation!\nStatus: ' + rsvpStatus + '\nComment: ' + commentText);
-                        rsvpStatus = null;
-                        commentText = '';
-                        updateRSVP();
-                    } else {
-                        alert('Please select Hadir or Tidak Hadir first!');
-                    }
-                }
-            });
+            }
         });
 
         window.addEventListener('load', drawImages);
