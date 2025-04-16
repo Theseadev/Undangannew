@@ -49,13 +49,13 @@
         ];
 
         const imagePaths = [
-            'src/image/cover.png',
-            'src/image/halaman1.png',
-            'src/image/halaman2.png',
-            'src/image/halaman3.png',
-            'src/image/halaman4.png',
-            'src/image/halaman5.png',
-            'src/image/halaman6.png'
+            'src/image/cover.webp',
+            'src/image/halaman1.webp',
+            'src/image/halaman2.webp',
+            'src/image/halaman3.webp',
+            'src/image/halaman4.webp',
+            'src/image/halaman5.webp',
+            'src/image/halaman6.webp'
         ];
 
         const audio = document.getElementById('backgroundMusic');
@@ -74,13 +74,13 @@
             cachedImages[index] = new Image();
             cachedImages[index].src = path;
         });
-        const buttonImg = new Image(); buttonImg.src = 'src/image/button.png';
-        const mapImg = new Image(); mapImg.src = 'src/image/map.png';
-        const hadirImg = new Image(); hadirImg.src = 'src/image/hadir.png';
-        const ahadirImg = new Image(); ahadirImg.src = 'src/image/ahadir.png';
-        const tidakHadirImg = new Image(); tidakHadirImg.src = 'src/image/tidakhadir.png';
-        const atidakHadirImg = new Image(); atidakHadirImg.src = 'src/image/atidakhadir.png';
-        const kirimImg = new Image(); kirimImg.src = 'src/image/kirim.png';
+        const buttonImg = new Image(); buttonImg.src = 'src/image/button.webp';
+        const mapImg = new Image(); mapImg.src = 'src/image/map.webp';
+        const hadirImg = new Image(); hadirImg.src = 'src/image/hadir.webp';
+        const ahadirImg = new Image(); ahadirImg.src = 'src/image/ahadir.webp';
+        const tidakHadirImg = new Image(); tidakHadirImg.src = 'src/image/tidakhadir.webp';
+        const atidakHadirImg = new Image(); atidakHadirImg.src = 'src/image/atidakhadir.webp';
+        const kirimImg = new Image(); kirimImg.src = 'src/image/kirim.webp';
 
         function drawButton(ctx, canvasWidth, canvasHeight, buttonRect, isCanvas4 = false) {
             const img = isCanvas4 ? mapImg : buttonImg;
